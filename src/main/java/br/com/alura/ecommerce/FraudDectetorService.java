@@ -7,6 +7,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.Random;
 import java.util.UUID;
 
 public class FraudDectetorService {
@@ -38,12 +39,14 @@ public class FraudDectetorService {
     }
 
     private static Properties properties() {
+        Random random = new Random();
+        int nrAleatorios = random.nextInt(5);
         var properties = new Properties();
         properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, FraudDectetorService.class.getSimpleName());
-        properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, FraudDectetorService.class.getSimpleName() + "_" + UUID.randomUUID().toString());
+        properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, FraudDectetorService.class.getSimpleName() + "_" + nrAleatorios);
         properties.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
         return properties;
     }
