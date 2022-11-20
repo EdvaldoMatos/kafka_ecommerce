@@ -6,8 +6,9 @@
 *.iws
 *.iml
 *.ipr
-/idea
+.idea/*
 /target
 .idea/workspace.xml
 .idea/git_toolbox_prj.xml
+
 
