@@ -1,15 +1,18 @@
 package br.com.alura.ecommerce;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.Random;
-import java.util.UUID;
 
+@Slf4j
 public class FraudDectetorService {
 
     public static void main(String[] args) {
@@ -18,28 +21,33 @@ public class FraudDectetorService {
         while (true) {
             var records = consumer.poll(Duration.ofMillis(100));
             if (!records.isEmpty()) {
-                System.out.println("Encontrei " + records.count() + " registros");
+                log.info("Encontrei " + records.count() + " registros");
                 for (var record : records) {
-                    System.out.println("---------------------------------------- ");
-                    System.out.println("Processing new order, checking for fraud ");
-                    System.out.println(record.key());
-                    System.out.println(record.value());
-                    System.out.println(record.partition());
-                    System.out.println(record.offset());
+                    log.info("---------------------------------------- ");
+                    log.info("Processing new order, checking for fraud ");
+                    log.info(record.key());
+                    log.info(record.value());
+                    log.info(String.valueOf(record.partition()));
+                    log.info(String.valueOf(record.offset()));
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {
                         // ignoring
                         throw new RuntimeException(e);
                     }
-                    System.out.println("Order processed whith sucess");
+                    log.info("Order processed whith sucess");
                 }
             }
         }
     }
 
     private static Properties properties() {
-        Random random = new Random();
+        Random random = null;
+        try {
+            random = SecureRandom.getInstanceStrong();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
         int nrAleatorios = random.nextInt(5);
         var properties = new Properties();
         properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
