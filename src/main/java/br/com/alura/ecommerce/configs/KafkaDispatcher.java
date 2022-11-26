@@ -1,4 +1,4 @@
-package br.com.alura.ecommerce;
+package br.com.alura.ecommerce.configs;
 
 import br.com.alura.ecommerce.serializacao.GsonSerializer;
 import org.apache.kafka.clients.producer.Callback;
@@ -13,10 +13,9 @@ import java.util.concurrent.ExecutionException;
 
 public class KafkaDispatcher<T> implements Closeable {
 
-
     private final KafkaProducer<String, T> producer;
 
-    KafkaDispatcher() {
+    public KafkaDispatcher() {
         this.producer = new KafkaProducer<>(properties());
     }
 
