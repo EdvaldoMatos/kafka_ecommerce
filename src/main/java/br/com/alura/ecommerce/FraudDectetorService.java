@@ -1,61 +1,30 @@
 package br.com.alura.ecommerce;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Properties;
-import java.util.Random;
 
-@Slf4j
 public class FraudDectetorService {
 
     public static void main(String[] args) {
-        var consumer = new KafkaConsumer<String, String>(properties());
-        consumer.subscribe(Collections.singletonList("ECOMMERCE_NEW_ORDER"));
-        while (true) {
-            var records = consumer.poll(Duration.ofMillis(100));
-            if (!records.isEmpty()) {
-                log.info("Encontrei " + records.count() + " registros");
-                for (var record : records) {
-                    log.info("---------------------------------------- ");
-                    log.info("Processing new order, checking for fraud ");
-                    log.info(record.key());
-                    log.info(record.value());
-                    log.info(String.valueOf(record.partition()));
-                    log.info(String.valueOf(record.offset()));
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        // ignoring
-                        throw new RuntimeException(e);
-                    }
-                    log.info("Order processed whith sucess");
-                }
-            }
+        var fraudDectetorService = new FraudDectetorService();
+        try (var service = new KafkaService(FraudDectetorService.class.getSimpleName(), "ECOMMERCE_NEW_ORDER", fraudDectetorService::parse)) {
+            service.run();
         }
     }
 
-    private static Properties properties() {
-        Random random = null;
+    private void parse(ConsumerRecord<String, String> record) {
+        System.out.println("---------------------------------------- ");
+        System.out.println("Processing new order, checking for fraud ");
+        System.out.println(record.key());
+        System.out.println(record.value());
+        System.out.println(record.partition());
+        System.out.println(record.offset());
         try {
-            random = SecureRandom.getInstanceStrong();
-        } catch (NoSuchAlgorithmException e) {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            // ignoring
             throw new RuntimeException(e);
         }
-        int nrAleatorios = random.nextInt(5);
-        var properties = new Properties();
-        properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, FraudDectetorService.class.getSimpleName());
-        properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, FraudDectetorService.class.getSimpleName() + "_" + nrAleatorios);
-        properties.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
-        return properties;
+        System.out.println("Order processed whith sucess");
     }
 }
