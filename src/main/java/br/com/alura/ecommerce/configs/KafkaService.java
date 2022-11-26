@@ -15,20 +15,20 @@ import java.util.regex.Pattern;
 
 public class KafkaService<T> implements Closeable {
     private final KafkaConsumer<String, T> consumer;
-    private final ConsumeFunction parse;
+    private final ConsumeFunction<T> parse;
 
 
-    public KafkaService(String groupId, String topic, ConsumeFunction parse, Class<T> type, Map<String, String> properties) {
+    public KafkaService(String groupId, String topic, ConsumeFunction<T> parse, Class<T> type, Map<String, String> properties) {
         this(parse, groupId, type, properties);
         consumer.subscribe(Collections.singletonList(topic));
     }
 
-    public KafkaService(String groupId, Pattern topic, ConsumeFunction parse, Class<T> type, Map<String, String> properties) {
+    public KafkaService(String groupId, Pattern topic, ConsumeFunction<T> parse, Class<T> type, Map<String, String> properties) {
         this(parse, groupId, type, properties);
         consumer.subscribe(topic);
     }
 
-    private KafkaService(ConsumeFunction parse, String groupId, Class<T> type, Map<String, String> properties) {
+    private KafkaService(ConsumeFunction<T> parse, String groupId, Class<T> type, Map<String, String> properties) {
         this.parse = parse;
         this.consumer = new KafkaConsumer<>(getProperties(type, groupId, properties));
 
@@ -39,8 +39,8 @@ public class KafkaService<T> implements Closeable {
             var records = consumer.poll(Duration.ofMillis(100));
             if (!records.isEmpty()) {
                 System.out.println("Encontrei " + records.count() + " registros");
-                for (var record : records) {
-                    parse.consume(record);
+                for (var rec : records) {
+                    parse.consume(rec);
                 }
             }
         }
