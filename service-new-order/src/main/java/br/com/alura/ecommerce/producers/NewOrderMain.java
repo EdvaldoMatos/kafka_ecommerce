@@ -6,6 +6,7 @@ import br.com.alura.ecommerce.vo.Order;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -19,7 +20,7 @@ public class NewOrderMain{
 
                     var userId = UUID.randomUUID().toString();
                     var orderId = UUID.randomUUID().toString();
-                    var amount = BigDecimal.valueOf(Math.random() * 5000 + 1);
+                    var amount = BigDecimal.valueOf(Math.random() * 5000 + 1).setScale(2, RoundingMode.HALF_UP);
                     var order = new Order(userId, orderId, amount);
                     orderDispatcher.send("ECOMMERCE_NEW_ORDER", userId, order);
 

@@ -13,5 +13,5 @@ public class Order {
 
     private String userId;
     private String orderId;
-    private BigDecimal value;
+    private BigDecimal amount;
 }
