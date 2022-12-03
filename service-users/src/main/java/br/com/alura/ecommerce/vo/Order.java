@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 @ToString
 public class Order {
 
-    private String userId;
     private String orderId;
     private BigDecimal amount;
     private String email;

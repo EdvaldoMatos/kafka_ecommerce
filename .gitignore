@@ -17,3 +17,4 @@
 /service-email/target/*
 /service-log/target/*
 /service-new-order/target/*
+/service-users/target/*

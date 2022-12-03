@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class CreateUserService {
@@ -17,7 +18,11 @@ public class CreateUserService {
     CreateUserService() throws SQLException {
         String url = "jdbc:sqlite:target/users_database.db";
         this.connection = DriverManager.getConnection(url);
-        connection.createStatement().execute("create table User (" + "uuid varchar(200) primary key," + "email varchar(200))");
+        try {
+            connection.createStatement().execute("create table User (" + "uuid varchar(200) primary key," + "email varchar(200))");
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
 
     }
 
@@ -36,6 +41,7 @@ public class CreateUserService {
         var order = record.value();
 
         if (isNewUser(order.getEmail())) {
+            System.out.println("Criando Usuário");
             insertNewUser(order.getEmail());
         }
 
@@ -43,8 +49,8 @@ public class CreateUserService {
 
     private void insertNewUser(String email) throws SQLException {
         var insert = connection.prepareStatement("insert into User (uuid, email) values (?, ?)");
-        insert.setString(1, "uuid");
-        insert.setString(2, "email");
+        insert.setString(1, UUID.randomUUID().toString());
+        insert.setString(2, email);
         insert.execute();
         System.out.println("Usuário uuid e " + email + "adicionado");
     }
@@ -53,7 +59,9 @@ public class CreateUserService {
         var consulta = connection.prepareStatement("Select uuid from user where email = ? limit 1");
         consulta.setString(1, email);
         var rs = consulta.executeQuery();
-        return ! rs.next();
+        var isNew = !rs.next();
+        System.out.println("Pesquisa se exist na base true  inclui e falso já existe -> " + isNew);
+        return isNew;
     }
 
 }
