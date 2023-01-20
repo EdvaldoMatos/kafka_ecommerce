@@ -1,0 +1,20 @@
+### IntelliJ IDEA ###
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+*.iws
+*.iml
+*.ipr
+.idea/*
+/target
+.idea/workspace.xml
+.idea/git_toolbox_prj.xml
+
+
+/common-kafka/target/*
+/service-fraud-detector/target/*
+/service-email/target/*
+/service-log/target/*
+/service-new-order/target/*
+/service-users/target/*
